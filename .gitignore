@@ -1,3 +1,4 @@
 settings.py
 sales.csv
 .vscode
+__pycache__
