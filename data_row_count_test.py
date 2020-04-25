@@ -105,14 +105,14 @@ def teams_notification():
   myTeamsMessage.summary('done!')
   myTeamsMessage.send()
 
-if if __name__ == "__main__":
+if __name__ == "__main__":
     """
      Initiate connection
      Run test
      Close connection
      Send  notification to teams webwook
     """
-  db_init_connect()
-  row_count_test()
-  teams_notification()
-  db_close_conn()  
+    db_init_connect()
+    row_count_test()
+    teams_notification()
+    db_close_conn()  
