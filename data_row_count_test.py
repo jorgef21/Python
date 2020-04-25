@@ -61,11 +61,11 @@ def db_close_conn():
 def row_count_test():
   Section1 = pymsteams.cardsection()
   if (sys.argv[1]=='composite'):
-  file='/home/informatica/test/composite_tables.csv'
-  Section1.title('Composite Tables test summary: ')
+    file='/home/informatica/test/composite_tables.csv'
+    Section1.title('Composite Tables test summary: ')
   elif (sys.argv[1]=='loe'):
-  file='/home/informatica/test/loe_tables.csv'
-  Section1.title('LOE Tables test summary: ')
+    file='/home/informatica/test/loe_tables.csv'
+    Section1.title('LOE Tables test summary: ')
 
   with open (file,'r') as csvfile:
      reader = csv.reader(csvfile,delimiter=',')
