@@ -24,25 +24,9 @@ import csv
 import pymsteams
 from settings import oracle_conn_string,snf_user,snf_password,teams_webhook
 
-#Global Variables
-myTeamsMessage = pymsteams.connectorcard(teams_webhook)
-query = 'SELECT COUNT(0) FROM '
-count_oracle = 0 
-count_snf = 0
-executed = 0
-passed = 0
-failed = 0
-rest = 0
-cur = None
-cursor = None
-error_table = []
-file = ''
-Section1 = pymsteams.cardsection()
-Section2 = pymsteams.cardsection()
 
-def db_init_connect():
 # SNOWFLAKE CONNECTION
-  con = snowflake.connector.connect(
+con = snowflake.connector.connect(
       user=snf_user,
       password=snf_password,
       account='laureate',
@@ -50,68 +34,83 @@ def db_init_connect():
       database='BI_CDW_PROD',
       schema='UPN_STG_SIS_BNRODS_ODSMGR',
       role = 'BI_READ'
-    )
-  cur = con.cursor()
-  cur.execute('SELECT current_version()')
-  snf_version = cur.fetchone()
+      )
+cur = con.cursor()
+cur.execute('SELECT current_version()')
+snf_version = cur.fetchone()
 
-  # ORACLE CONNCTION
-  LOCATION = r"C:\instantclient_19_3"
-  os.environ['PATH'] = LOCATION + ';' + os.environ['PATH']
-  conn = cx_Oracle.connect(oracle_conn_string)
-  cursor = conn.cursor()
-  print('Welcone, Oracle Version: '+conn.version)
-  print('Snowflake Version: '+snf_version[0])
-
-def db_close_conn():
-  cursor.close()            
-  cur.close()
+# ORACLE CONNCTION
+LOCATION = r"C:\instantclient_19_3"
+os.environ['PATH'] = LOCATION + ';' + os.environ['PATH']
+conn = cx_Oracle.connect(oracle_conn_string)
+cursor = conn.cursor()
+print('Welcone, Oracle Version: '+conn.version)
+print('Snowflake Version: '+snf_version[0])
 
 def row_count_test():
-  if (sys.argv[1]=='composite'):
-    file='/home/informatica/test/composite_tables.csv'
-    Section1.title('Composite Tables test summary: ')
-  elif (sys.argv[1]=='loe'):
-    file='/home/informatica/test/loe_tables.csv'
-    Section1.title('LOE Tables test summary: ')
-
-  with open (file,'r') as csvfile:
-     reader = csv.reader(csvfile,delimiter=',')
-     for row in reader:
-         cursor.execute(query+row[0])
-         cur.execute(query+row[0])
-         count_oracle = cursor.fetchone()[0]
-         count_snf =cur.fetchone()[0]
-         rest = int(count_oracle)-int(count_snf)
-         if (rest==0): 
-            executed += 1
-            passed += 1
-            print(row[0]+'==================> TEST PASSED :) !')
-         else:
-            failed += 1
-            executed += 1 
-            error_table.append(row[0])
-            print(row[0]+'==================> TEST FAILED :( !'+'   ORACLE ROWCOUNT: '+str(count_oracle)+' SNOWFLAKE ROWCOUNT: '+str(count_snf)+'   DIFF: '+str(rest))
-     print('\n Test executed: '+str(executed)+' Passed: '+str(passed)+' Failed: '+str(failed))
-
-def teams_notification():
-#SEND NOTIFICATION TO TEAMS
-
-  Section1.text('Test Executed: '+str(executed)+'  Passed: '+str(passed)+'  Failed: '+str(failed))
-  #Section 2
-  Section2.title('Tables with errors: ')
-  Section2.text(" | ".join(error_table))
-
-  if error_table:
-      myTeamsMessage.color('990000')
+   #Variables
+  count_oracle = 0 
+  count_snf = 0
+  passed = 0
+  failed = 0
+  rest = 0
+  myTeamsMessage = pymsteams.connectorcard(teams_webhook)
+  Section1 = pymsteams.cardsection()
+  Section2 = pymsteams.cardsection()
+  executed = 0
+  passed = 0
+  failed = 0 
+  error_table = []
+  file = ''
+  
+  if len(sys.argv)>1:
+    if (sys.argv[1]=='sales'):
+      file='./sales.csv'
+      Section1.title('Sales Tables test summary: ')
+    elif (sys.argv[1]=='customers'):
+      file='./customer.csv'
+      Section1.title('Customer Tables test summary: ')
   else:
-      myTeamsMessage.color('56e16d')
-      
-  myTeamsMessage.title('Oracle-SNF Data check')
-  myTeamsMessage.addSection(Section1)
-  myTeamsMessage.addSection(Section2)
-  myTeamsMessage.summary('done!')
-  myTeamsMessage.send()
+    print('No Parameter')
+
+  if file != '':
+    with open (file,'r') as csvfile:
+      query = 'SELECT COUNT(0) FROM '
+      reader = csv.reader(csvfile,delimiter=',')
+      for row in reader:
+          cursor.execute(query+row[0]) #add table name from csv
+          cur.execute(query+row[0])   #add table name from csv
+          count_oracle = cursor.fetchone()[0] #cursor result
+          count_snf =cur.fetchone()[0]
+          rest = int(count_oracle)-int(count_snf)
+          if (rest==0): 
+              executed = executed+1
+              passed = passed+1
+              print(row[0]+'==================> TEST PASSED :) !')
+          else:
+              failed += 1
+              executed += 1 
+              error_table.append(row[0])
+              print(row[0]+'==================> TEST FAILED :( !'+'   ORACLE ROWCOUNT: '+str(count_oracle)+' SNOWFLAKE ROWCOUNT: '+str(count_snf)+'   DIFF: '+str(rest))
+      print('\n Test executed: '+str(executed)+' Passed: '+str(passed)+' Failed: '+str(failed))
+      #Send notification
+      Section1.text('Test Executed: '+str(executed)+'  Passed: '+str(passed)+'  Failed: '+str(failed))
+      #Section 2
+      Section2.title('Tables with errors: ')
+      Section2.text(" | ".join(error_table))
+
+      if error_table:
+          myTeamsMessage.color('990000')
+      else:
+          myTeamsMessage.color('56e16d')
+          
+      myTeamsMessage.title('Oracle-SNF Data check')
+      myTeamsMessage.addSection(Section1)
+      myTeamsMessage.addSection(Section2)
+      myTeamsMessage.summary('done!')
+      myTeamsMessage.send()
+  else:
+      print('No file')
 
 if __name__ == "__main__":
     """
@@ -119,8 +118,7 @@ if __name__ == "__main__":
      Run test
      Close connection
      Send  notification to teams webwook
-    """
-    db_init_connect()
+    """ 
     row_count_test()
-    teams_notification()
-    db_close_conn()  
+    cursor.close()            #close oracle conn
+    cur.close()               #close snowflake conn
