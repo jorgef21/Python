@@ -30,6 +30,8 @@ executed = 0
 passed = 0
 failed = 0
 rest = 0
+cur = None
+cursor = None
 error_table = []
 file = ''
 
@@ -59,6 +61,7 @@ def db_close_conn():
   cur.close()
 
 def row_count_test():
+  
   Section1 = pymsteams.cardsection()
   if (sys.argv[1]=='composite'):
     file='/home/informatica/test/composite_tables.csv'
@@ -88,6 +91,7 @@ def row_count_test():
 
 def teams_notification():
 #SEND NOTIFICATION TO TEAMS
+  Section1 = pymsteams.cardsection()
   Section1.text('Test Executed: '+str(executed)+'  Passed: '+str(passed)+'  Failed: '+str(failed))
   #Section 2
   Section2 = pymsteams.cardsection()
