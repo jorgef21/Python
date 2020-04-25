@@ -11,6 +11,9 @@ Instructions:
   snf_user = ''		          Snowflake User
   snf_password= ''		  Snowflake pw
   teams_webhook = ''		  Teams channel webhook
+For windows download Oracle instantclient and use the variables LOCATION = r"C:\instantclient_19_3"
+  os.environ['PATH'] = LOCATION + ';' + os.environ['PATH'
+  Run: python data_row_count_test.py tables_context ie: sales
 """
 import os
 import sys
@@ -53,9 +56,11 @@ def db_init_connect():
   snf_version = cur.fetchone()
 
   # ORACLE CONNCTION
+  LOCATION = r"C:\instantclient_19_3"
+  os.environ['PATH'] = LOCATION + ';' + os.environ['PATH']
   conn = cx_Oracle.connect(oracle_conn_string)
   cursor = conn.cursor()
-  print('Welcone, Oracle Version: '+cursor.version)
+  print('Welcone, Oracle Version: '+conn.version)
   print('Snowflake Version: '+snf_version[0])
 
 def db_close_conn():
