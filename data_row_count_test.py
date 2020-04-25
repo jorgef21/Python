@@ -61,8 +61,6 @@ def db_close_conn():
   cur.close()
 
 def row_count_test():
-  
-  Section1 = pymsteams.cardsection()
   if (sys.argv[1]=='composite'):
     file='/home/informatica/test/composite_tables.csv'
     Section1.title('Composite Tables test summary: ')
