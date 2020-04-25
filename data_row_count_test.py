@@ -48,13 +48,13 @@ def db_init_connect():
     )
   cur = con.cursor()
   cur.execute('SELECT current_version()')
-  one_row = cur.fetchone()
+  snf_version = cur.fetchone()
 
   # ORACLE CONNCTION
   conn = cx_Oracle.connect(oracle_conn_string)
   cursor = conn.cursor()
-  print('Welcone, Oracle Version: '+conn.version)
-  print('Snowflake Version: '+one_row[0])
+  print('Welcone, Oracle Version: '+cursor.version)
+  print('Snowflake Version: '+snf_version[0])
 
 def db_close_conn():
   cursor.close()            
