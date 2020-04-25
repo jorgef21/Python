@@ -34,6 +34,8 @@ cur = None
 cursor = None
 error_table = []
 file = ''
+Section1 = pymsteams.cardsection()
+Section2 = pymsteams.cardsection()
 
 def db_init_connect():
 # SNOWFLAKE CONNECTION
@@ -89,10 +91,9 @@ def row_count_test():
 
 def teams_notification():
 #SEND NOTIFICATION TO TEAMS
-  Section1 = pymsteams.cardsection()
+
   Section1.text('Test Executed: '+str(executed)+'  Passed: '+str(passed)+'  Failed: '+str(failed))
   #Section 2
-  Section2 = pymsteams.cardsection()
   Section2.title('Tables with errors: ')
   Section2.text(" | ".join(error_table))
 
