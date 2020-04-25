@@ -3,6 +3,8 @@ Wrapper to send notifications to Teams Channels
 
 - Export settings from settings.py, need to create a file with teams_webhook
 - Takes Job name from ENV variable job_name
+- Parse ET time to LATAM(Adjust to your needs)
+
 """
 import pymsteams
 import os
