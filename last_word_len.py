@@ -11,7 +11,7 @@ Ex. 'This is a test' - > reuturns 4 since test has 4 letters
 """
 def last_word_len(s):
   words = []
-  words.append(s.split(' '))
+  words.append(s.split())
   last_word_length = 0
   w1 = ''
 
