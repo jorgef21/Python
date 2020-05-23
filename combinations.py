@@ -12,7 +12,7 @@ def comb(flavors,toppings):
    return [[f,t] for f in flavors for t in toppings]
 
 def main():
-    print(comb(['Vanilla','Chocolate'],['Caramel','Chocolate Chips','Oreo']))
+    print(comb(['Vanilla','Chocolate'],['Caramel','Oreo']))
 
 if __name__=='__main__':
     main()
