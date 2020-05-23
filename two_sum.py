@@ -9,13 +9,11 @@ return [0, 1].
 """
 def twoSum(nums, target):
         h_table = {}
-        for i in range(len(nums)):
-            diff = target - nums[i]
-            print(nums[i],diff)
-            if diff in h_table and h_table[diff] != i:
+        for i,v in enumerate(nums):
+            diff = target - v
+            if diff in h_table:
                 return [h_table[diff], i]
-            else:
-                h_table[nums[i]] = i
+            h_table[v] = i
 
 def main():
     print(twoSum([2, 7, 11, 15],9))
